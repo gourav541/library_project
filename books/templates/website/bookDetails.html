@@ -1,0 +1,129 @@
+{% extends 'website/webbase.html'%}
+{% load static %}
+{% block content %}
+
+
+<title>Home</title>
+
+
+
+<main>
+    <div class="container mt-4">
+        
+        <section class="book_info mb-3">
+            <div class="card mb-3" style="max-width: 100%;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{% static "assets/img/test.webp" %}" class="img-fluid rounded-start" width="50%">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Clint Wolf Boxed Set: Books 13–15</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">BJ Bourg</h6>
+                            <p class="card-text">Detective Clint Wolf takes on perplexing new cases — from a shooting victim with a puzzling identity to a bold
+                            kidnapping — in these three gripping mysteries!
+                            Publisher Description
+                            Books 13-15 (But Not Forespoken, But Not For Blood, and But Not Foreknown) of the Amazon best-selling Clint Wolf Mystery
+                            Series by award-winning author BJ Bourg</p>
+                            <p class="card-text"><small class="text-body-secondary">Pages : 740</small></p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between">
+                                <h5 class="card-title">INR 234/-</h5>
+                                <button class="btn btn-sm btn-outline-primary" aria-label="Like">
+                                    <i class="fas fa-thumbs-up"></i>
+                                    <span class="count">123</span> <!-- Number of likes -->
+                                </button>
+                        
+                                <button class="btn btn-sm btn-outline-primary" aria-label="Comment" data-bs-toggle="modal"
+                                    data-bs-target="#commentModal">
+                                    <i class="fas fa-comments"></i>
+                                    <span class="count">45</span> <!-- Number of comments -->
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- Comment Modal -->
+        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group">
+                            <!-- List of comments -->
+                            <li class="list-group-item">User 1: Great book!</li>
+                            <li class="list-group-item">User 2: I loved the characters.</li>
+                            <li class="list-group-item">User 3: The plot was very engaging.</li>
+                            <!-- Add more comments here -->
+                        </ul>
+                        <form>
+                            <div class="mb-2">
+                                <label for="newComment" class="form-label">Add a comment:</label>
+                                <input type="text" class="form-control" id="newComment"
+                                    placeholder="Write your comment here...">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="card-title">More books in similar categories</h1>
+
+        <!-- Set up your HTML -->
+        <div class="owl-carousel">
+            <div class="card">
+                <img src="{% static "assets/img/test.webp" %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
+                        This content is a little bit longer.</p>
+                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static "assets/img/test.webp" %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
+                        This content is a little bit longer.</p>
+                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static "assets/img/test.webp" %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
+                        This content is a little bit longer.</p>
+                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+            <div class="card">
+                <img src="{% static "assets/img/test.webp" %}" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.
+                        This content is a little bit longer.</p>
+                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+{% endblock %}
