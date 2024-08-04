@@ -6,16 +6,16 @@ import random
 from django.db import models
 from books.models import Book , UserInteraction
 from django.http import Http404
-from books.models import Book, Comment
-from django.db.models import Count
+from books.models import Book
+from django.db.models import Count, Q
 from books.views.booksapi_views import fetch_book_from_api
-from books.forms import CommentForm
+from django.contrib.auth.decorators import login_required
 
 def MainWebsite(request):
     price_range = request.GET.get('price_range', None)
 
     # Define random queries
-    random_queries = ['book', 'random', 'story', 'the', 'adventure', 'novel', 'mystery', 'life', 'love', 'history']
+    random_queries = ['magic', 'success', 'story', 'marvels', 'adventure', 'novel', 'mystery', 'life', 'love', 'history']
 
     try:
         # Fetch books based on the presence of a price range
@@ -41,25 +41,14 @@ def MainWebsite(request):
         # Create a dictionary to map ISBN to like counts
         like_count_dict = {item['book__isbn']: item['like_count'] for item in book_like_counts}
 
-        # Fetch comments for each book
-        books_db = Book.objects.filter(isbn__in=isbn_list_13).prefetch_related('comment_set')
-        book_db_dict = {book.isbn: book for book in books_db}
-
-        # Add like counts and comments to each book
+        
+        # Add like counts
         for book in filtered_books:
             book_isbn_13 = next((identifier['identifier'] for identifier in book.get('volumeInfo', {}).get('industryIdentifiers', []) if identifier['type'] == 'ISBN_13'), '')
             book['isbn'] = book_isbn_13
             book['like_count'] = like_count_dict.get(book_isbn_13, 0)
 
-            # Get comments from the database
-            book_db = book_db_dict.get(book_isbn_13)
-            if book_db:
-                book['comments_count'] = book_db.comment_set.count()
-                book['comments'] = book_db.comment_set.all()
-            else:
-                book['comments_count'] = 0
-                book['comments'] = []
-
+            
         context = {
             'books': filtered_books,
             'error': error,
@@ -73,6 +62,7 @@ def MainWebsite(request):
         }
 
     return render(request, 'website/index.html', context)
+
 
 
 def SearchBook(request):
@@ -96,24 +86,14 @@ def SearchBook(request):
     # Create a dictionary to map ISBN to like counts
     like_count_dict = {item['book__isbn']: item['like_count'] for item in book_like_counts}
 
-    # Fetch comments for each book
-    books_db = Book.objects.filter(isbn__in=isbn_list_13).prefetch_related('comment_set')
-    book_db_dict = {book.isbn: book for book in books_db}
-
-    # Add like counts and comments to each book
+   
+    # Add like counts to each book
     for book in books:
         book_isbn_13 = next((identifier['identifier'] for identifier in book.get('volumeInfo', {}).get('industryIdentifiers', []) if identifier['type'] == 'ISBN_13'), '')
         book['isbn'] = book_isbn_13
         book['like_count'] = like_count_dict.get(book_isbn_13, 0)
 
-        # Get comments from the database
-        book_db = book_db_dict.get(book_isbn_13)
-        if book_db:
-            book['comments_count'] = book_db.comment_set.count()
-            book['comments'] = book_db.comment_set.all()
-        else:
-            book['comments_count'] = 0
-            book['comments'] = []
+        
 
     context = {
         'books': books,
@@ -124,47 +104,20 @@ def SearchBook(request):
     # Render the results in the template
     return render(request, 'website/index.html', context)
 
-
-def book_detail(request, isbn):
-    book, created = Book.objects.get_or_create(isbn=isbn)
-
-    try:
-        book_data = fetch_book_from_api(isbn)
-        if book_data:
-            if created:
-                # If the book is newly created, set all fields from the API data
-                book.book_name = book_data['title']
-                book.book_author = ', '.join(book_data['authors'])
-                book.book_rating = book_data.get('averageRating', 0)
-                book.description = book_data.get('description', '')
-                book.thumbnail = book_data.get('thumbnail', '')
-            else:
-                # If the book already exists, update missing fields
-                if not book.book_name:
-                    book.book_name = book_data['title']
-                if not book.book_author:
-                    book.book_author = ', '.join(book_data['authors'])
-                if book.book_rating is None:
-                    book.book_rating = book_data.get('averageRating', 0)
-                if not book.description:
-                    book.description = book_data.get('description', '')
-                if not book.thumbnail:
-                    book.thumbnail = book_data.get('thumbnail', '')
-            book.save()
-        else:
-            raise Http404("Book not found in external source")
-    except Exception as e:
-        print(f"Error fetching book data: {e}")
-        raise Http404("Error fetching book details")
-
-    comments = Comment.objects.filter(book=book).order_by('-created_at')
+@login_required
+def liked_books(request):
+    user = request.user
     
-    # Optional: Fetch similar books
-    similar_books = Book.objects.exclude(isbn=isbn).annotate(like_count=Count('userinteraction')).order_by('-like_count')[:10]
-    
+    # Fetch IDs of books liked by the user
+    liked_books_ids = UserInteraction.objects.filter(user=user, interaction_type=1).values_list('book_id', flat=True)
+
+    # Annotate books with their like count
+    books = Book.objects.filter(id__in=liked_books_ids).annotate(
+        like_count=Count('userinteraction', filter=Q(userinteraction__interaction_type=1))
+    )
+
     context = {
-        'book': book,
-        'comments': comments,
-        'similar_books': similar_books,
+        'books': books
     }
-    return render(request, 'website/bookDetails.html', context)
+
+    return render(request, 'website/LikedBooks.html', context)

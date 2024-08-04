@@ -89,48 +89,7 @@
                                             </button>
                                         </form>
                                         
-                                        <!-- Button to show number of comments and open modal -->
-                                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#commentModal">
-                                            Comments (<span id="commentCount">{{ book.comments_count }}</span>)
-                                        </button>
                                         
-                                        <!-- Comment Modal -->
-                                        <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="commentModalLabel">Comments</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <!-- Comment Form -->
-                                                        <form class="comment-form" data-comment-url="{% url 'add_comment_ajax' %}" data-isbn="{{ book.isbn }}">
-                                                            {% csrf_token %}
-                                                            <div class="mb-2">
-                                                                <label for="newComment" class="form-label">Add a comment:</label>
-                                                                <input type="text" class="form-control" name="newComment" placeholder="Write your comment here...">
-                                                            </div>
-                                                            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-                                                        </form>
-                                                        
-                                                        <!-- List of comments for this book -->
-                                                        <ul id="comments-list-{{ book.isbn }}">
-                                                            {% for comment in book.comments.all %}
-                                                            <li>{{ comment.user.username }}: {{ comment.comment }}</li>
-                                                            {% empty %}
-                                                            <li>No comments yet. Be the first to comment!</li>
-                                                            {% endfor %}
-                                                        </ul>
-
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-
 
                                     </div>
                                 </div>
