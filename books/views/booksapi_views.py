@@ -52,7 +52,7 @@ def fetch_books(query, max_results=10, max_pages=2):
         except Exception as err:
             print(f'Other error occurred: {err}')
             break
-
+    
     return books
 
 

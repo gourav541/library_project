@@ -10,19 +10,32 @@ from django.contrib import messages
 from django.http import JsonResponse
 from books.models import Book, UserInteraction
 import json
-from books.forms import CommentForm
-from books.models import Book, Comment
+import logging
+
+from books.models import Book
 from django.db.models import Count
 from books.views.booksapi_views import fetch_book_from_api
+
+logger = logging.getLogger(__name__)
+
+
 
 
 def SignUpPage(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Account created successfully!')
-            return redirect('website')
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Account created successfully!')
+                return redirect('website')
+            else:
+                messages.error(request, 'Authentication failed. Please try logging in manually.')
+                return redirect('login')
         else:
             messages.error(request, 'Error creating account.')
     else:
@@ -87,43 +100,18 @@ def like_book(request):
             interaction.interaction_type = 1
             interaction.save()
 
-        # Update like count
-        book.like_count = UserInteraction.objects.filter(book=book, interaction_type=1).count()
+        # Calculate like count
+        like_count = UserInteraction.objects.filter(book=book, interaction_type=1).count()
+        book.like_count = like_count
         book.save()
 
         response_data = {
             'success': True,
             'message': message,
-            'like_count': book.like_count
+            'like_count': like_count
         }
 
         return JsonResponse(response_data)
 
     return JsonResponse({'success': False}, status=400)
 
-
-@login_required
-@require_POST
-def add_comment_ajax(request):
-    data = json.loads(request.body)
-    book_isbn = data.get('book_isbn')
-    comment_text = data.get('comment')
-
-    try:
-        book = Book.objects.get(isbn=book_isbn)
-        comment = Comment.objects.create(
-            user=request.user,
-            book=book,
-            comment=comment_text
-        )
-        response_data = {
-            'success': True,
-            'user': request.user.username,
-            'comment': comment_text
-        }
-    except Book.DoesNotExist:
-        response_data = {
-            'success': False
-        }
-
-    return JsonResponse(response_data)

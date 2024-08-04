@@ -20,7 +20,7 @@ from books.views import client_views , booksapi_views , server_views
 
 urlpatterns = [
     path('', client_views.MainWebsite, name='website'),
-    # path('bookdetails/', client_views.BookDetails, name='bookDetails'),
+    path('liked-books/', client_views.liked_books, name='liked_books'),
     path('search/', client_views.SearchBook, name='search_book'),
     path('',include('books.urls')),
     

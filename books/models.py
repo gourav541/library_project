@@ -32,8 +32,14 @@ class Book(models.Model):
     description = models.TextField(blank=True)
     thumbnail_url = models.URLField(blank=True, null=True)
     book_rating = models.FloatField()
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # @property
+    # def like_count(self):
+    #     return UserInteraction.objects.filter(book=self, interaction_type=1).count()
+
 
     def __str__(self):
         return self.book_name
@@ -54,12 +60,3 @@ class UserInteraction(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.book.book_name} - {self.get_interaction_type_display()}"
     
-
-class Comment(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
-
-    def __str__(self):
-        return f"Comment by {self.user.username} on {self.book.book_name}"

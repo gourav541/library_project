@@ -1,7 +1,7 @@
 # books/forms.py
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import CustomUser , Comment
+from .models import CustomUser
 from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
@@ -18,10 +18,3 @@ class CustomUserCreationForm(UserCreationForm):
         return email
 
 
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['comment']
-        widgets = {
-            'comment': forms.Textarea(attrs={'rows': 3}),
-        }
