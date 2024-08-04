@@ -21,7 +21,7 @@
    conda create -n booksbridge python=3.10.3
    conda activate booksbridge
 
-3. **Create and Activate a Conda Environment**:
+3. **Generate Google API Keys**:
    - Generate API Credentials from [Google Books API](https://developers.google.com/books/docs/v1/using) and update the .env file
 
 4. **Running the Project**:
